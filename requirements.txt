@@ -1,1 +1,5 @@
 Flask
+Flask-BasicAuth
+email-validator
+
+google-cloud-datastore

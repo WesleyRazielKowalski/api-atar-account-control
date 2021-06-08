@@ -1,13 +1,11 @@
 import datetime
 from flask import Flask, request, json, Response, render_template
-#import flask
 import logging
-from control_account import AccountControlObj
+from account_control import AccountControlObj
 from authentication import Authentication
 import base64
 
 from flask import Flask, render_template
-#from flask_basicauth import BasicAuth
 
 app = Flask(__name__)
 
@@ -28,13 +26,13 @@ def control_account():
         if request.headers['Authorization']:
             if Authentication.check_can_access(request.headers['Authorization']):
                 if request.method == 'GET':
-                    return AccountControlObj.get(request)
+                    return AccountControlObj.get(request.args.get("id"))
                 elif request.method == 'POST':
                     return AccountControlObj.insert(request)
                 elif request.method == 'PUT':
-                    return AccountControlObj.update(request)
+                    return AccountControlObj.update(request.args.get("id"), request)
         else:
-            return "informe o token"
+            return "Informe o token de autenticação"
     except:
         logging.info("e")
 
