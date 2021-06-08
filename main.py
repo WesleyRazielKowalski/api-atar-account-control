@@ -1,6 +1,13 @@
 import datetime
+from flask import Flask, request, json, Response, render_template
+#import flask
+import logging
+from control_account import AccountControlObj
+from authentication import Authentication
+import base64
 
 from flask import Flask, render_template
+#from flask_basicauth import BasicAuth
 
 app = Flask(__name__)
 
@@ -15,10 +22,21 @@ def root():
 
     return render_template('index.html', times=dummy_times)
 
-@app.route('/teste')
-def ttt():
-    return "teste"
-
+@app.route('/register', methods=['GET', 'POST', 'PUT'])
+def control_account():
+    try:
+        if request.headers['Authorization']:
+            if Authentication.check_can_access(request.headers['Authorization']):
+                if request.method == 'GET':
+                    return AccountControlObj.get(request)
+                elif request.method == 'POST':
+                    return AccountControlObj.insert(request)
+                elif request.method == 'PUT':
+                    return AccountControlObj.update(request)
+        else:
+            return "informe o token"
+    except:
+        logging.info("e")
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
