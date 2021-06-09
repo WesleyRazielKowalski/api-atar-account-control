@@ -3,3 +3,4 @@ Flask-BasicAuth
 email-validator
 
 google-cloud-datastore
+google-cloud-storage
