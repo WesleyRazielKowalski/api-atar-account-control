@@ -44,15 +44,35 @@ class AccountDatastore():
             return return_list
         except Exception as e:
             return ("Erro ao alterar registro no datastore!")
-            #client = datastore.Client()
-            # query = client.query(kind="users")
-            # query.filter('key =', str(id))
-            # items = list(query.fetch())
-            # list_return = []
-            # for item in items:
-            #    item_item =
+
+    def email_registered(self, email):
+        AccountDatastore.set_keystore()
+        client = datastore.Client()
+        try:
+            query = client.query(kind="users")
+            query.add_filter("email", "=", str(email))
+            register = list(query.fetch())
+            if len(register):
+                return True, register
+            else:
+                return False, 0
         except Exception as e:
-            return ("Erro ao buscar registro no datastore!")
+            return ("Erro ao validar email cadastrado no datastore!")
+
+    def document_registered(self, document):
+        AccountDatastore.set_keystore()
+        client = datastore.Client()
+        try:
+            query = client.query(kind="users")
+            query.add_filter("document", "=", str(document))
+            register = list(query.fetch())
+            if len(register):
+                return True, register
+            else:
+                return False, 0
+        except Exception as e:
+            return ("Erro ao validar documento cadastrado no datastore!")
+
 
 
 

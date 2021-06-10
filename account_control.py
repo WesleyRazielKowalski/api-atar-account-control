@@ -2,12 +2,11 @@
 #from flask import jsonify
 #from flask_http_response import success, result, error
 import logging
-from flask import request
+from flask import request, json, Response
 from account_validator import AccountValidator
 from account_datastore import AccountDatastore
 from account_object import AccountObject
 from utils import messagesDefault
-from flask import json, Response
 
 class AccountControlObj():
 
@@ -28,8 +27,12 @@ class AccountControlObj():
                 raise str(messagesDefault.parameter_message_empty())
 
             account_obj = AccountObject(request_data, id)
-            if AccountControlObj.validate_control_update(account_obj):
-                return AccountDatastore.update_register(account_obj)
+            validate = AccountControlObj.validate_control_update(account_obj)
+            if validate[0] == True:
+                account_obj.entry_data_with_datastore(AccountDatastore.update_register(account_obj))
+                return {"data": account_obj.get_json()}, 201
+            else:
+                return {"erro": str(validate[0])}, validate[1]
         except Exception as e:
             return e
 
@@ -52,18 +55,29 @@ class AccountControlObj():
             if not account_obj:
                 raise str(messagesDefault.parameter_message_empty())
 
-
-
         except Exception as e:
             return e
 
     def validate_control_update(account_obj):
-        return True
         try:
             if not account_obj:
                 raise str(messagesDefault.parameter_message_empty())
 
+            if not AccountValidator.validate_birthdate_older_eighteen(account_obj.birth_date):
+                return ("Data de nascimento menor que 18 anos"), 400
 
+            if not AccountValidator.validate_document(account_obj.document):
+                return ("Documento inválido"), 400
 
+            if not AccountValidator.validate_email(account_obj.email):
+                return ("E-mail inválido"), 406
+
+            if AccountValidator.validate_exists_registered_email(account_obj.id, account_obj.email):
+                return ("E-mail já cadastrado"), 409
+
+            if AccountValidator.validate_exists_registered_document(account_obj.id, account_obj.document):
+                return ("Documento inválido"), 400
+
+            return True, 200
         except Exception as e:
             return e

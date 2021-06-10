@@ -2,6 +2,10 @@ import logging
 from email_validator import validate_email, EmailNotValidError
 from utils import messagesDefault
 import re
+from datetime import datetime
+from dateutil import relativedelta
+from validate_email import validate_email
+from account_datastore import AccountDatastore
 
 class AccountValidator():
     def validate_document(document):
@@ -9,19 +13,17 @@ class AccountValidator():
             if not document:
                 raise str(messagesDefault.parameter_message_empty())
 
-            print("validate_document")
+            from validate_docbr import CPF, CNPJ
+            if len(AccountValidator().clean_characters_document(document)) == 11:
+                cpf = CPF()
+                return cpf.validate(AccountValidator().clean_characters_document(document))
+            elif len(AccountValidator().clean_characters_document(document)) == 14:
+                cnpj = CNPJ()
+                return cnpj.validate(AccountValidator().clean_characters_document(document))
+
+            return False
         except Exception as e:
             print(str(e))
-
-    def validate_email(email):
-        try:
-            #if not email:
-                #raise "Parâmetro de método não informado")
-
-            valid = validate_email(email)
-            # email = valid.email
-        except EmailNotValidError as e:
-            print(e)
 
     def validate_phone(phone):
         try:
@@ -32,12 +34,58 @@ class AccountValidator():
         except Exception as e:
             print(str(e))
 
-    def validate_bithdate_older_eighteen(bithdate):
+    def validate_email(email):
         try:
-            if not bithdate:
+            if not email:
                 raise str(messagesDefault.parameter_message_empty())
 
-            print("validate_bithdate_older_eighteen")
+            return validate_email(email)
+        except EmailNotValidError as e:
+            print(e)
+
+    def validate_birthdate_older_eighteen(date):
+        try:
+            if not date:
+                raise str(messagesDefault.parameter_message_empty())
+
+            date_date = datetime.strptime(AccountValidator().formating_birthdate(date), '%d/%m/%Y').date()
+            date_now = datetime.now().date()
+            years_old = relativedelta.relativedelta(date_now, date_date).years
+
+            if years_old >= 18:
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(str(e))
+
+    def validate_exists_registered_email(id_account_currency, email):
+        try:
+            if not email:
+                raise str(messagesDefault.parameter_message_empty())
+
+            result = False
+            register = AccountDatastore().email_registered(email)
+            if register[0]:
+                if int(register[1][0]["id"]) != int(id_account_currency):
+                    result = True
+
+            return result
+        except Exception as e:
+            print(str(e))
+
+    def validate_exists_registered_document(id_account_currency, document):
+        try:
+            if not document:
+                raise str(messagesDefault.parameter_message_empty())
+
+            result = False
+            register = AccountDatastore().document_registered(document)
+            if register[0]:
+                if int(register[1][0]["id"]) != int(id_account_currency):
+                    result = True
+
+            return result
         except Exception as e:
             print(str(e))
 
@@ -78,30 +126,3 @@ class AccountValidator():
 
     def clean_characters_phone(self, phone):
         return re.sub('[^0-9]', '', phone)
-
-    #def clean_characters_birthdate(self, birthdate):
-
-        #internal_phone = phone
-        #all = string.maketrans('','')
-        #nodigs = all.translate(all, string.digits)
-        #internal_phone.translate(all, nodigs)
-        #return internal_phone
-
-
-    # def exists_registered_email(email):
-    #     try:
-    #         if not email:
-    #             raise str(messagesDefault.parameter_message_empty())
-    #
-    #         print("registered_email")
-    #     except Exception as e:
-    #         print(str(e))
-    #
-    # def exists_registered_cpf(cpf):
-    #     try:
-    #         if not cpf:
-    #             raise str(messagesDefault.parameter_message_empty())
-    #
-    #         print("exists_registered_cpf")
-    #     except Exception as e:
-    #         print(str(e))

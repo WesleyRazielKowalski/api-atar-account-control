@@ -36,11 +36,23 @@ def control_account():
                     if request.method == 'GET':
                         return AccountControlObj.control_get(param_id)
                     elif request.method == 'PUT':
-                        return AccountControlObj.control_update(request, param_id)
-
-            return "Sem erros"
-    except:
-        logging.info("e")
+                        result_json = AccountControlObj.control_update(request, param_id)
+                        result_status = result_json[1]
+                        result_json = result_json[0]
+                        return_dump = json.dumps(result_json, ensure_ascii=False)
+                        return Response(return_dump, content_type="application/json; charset=utf-8"), result_status
+            else:
+                # Tem o header de autorização, mas não está com a chave correta.
+                result_json = {"erro": " Não autorizado", "descrição": "Chave de autenticação inválida"}
+                return_dump = json.dumps(result_json, ensure_ascii=False)
+                return Response(return_dump, content_type="application/json; charset=utf-8"), 401
+        else:
+            # Não tem o header de autorização
+            result_json = {"erro" : " Não autorizado", "descrição" : "Não foi informado a chave de autenticação"}
+            return_dump = json.dumps(result_json, ensure_ascii=False)
+            return Response(return_dump, content_type="application/json; charset=utf-8"), 401
+    except Exception as e:
+        logging.info(str(e))
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)

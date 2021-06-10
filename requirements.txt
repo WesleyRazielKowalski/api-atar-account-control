@@ -4,3 +4,6 @@ email-validator
 
 google-cloud-datastore
 google-cloud-storage
+python-dateutil
+validate_email
+validate-docbr
