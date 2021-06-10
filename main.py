@@ -29,20 +29,18 @@ def control_account():
                     return_id = AccountControlObj.control_insert(request)
                     if return_id:
                         result_json = return_id
-                        result_status = result_json[1]
-                        result_json = result_json[0]
-                        return_dump = json.dumps(result_json, ensure_ascii=False)
-                        return Response(return_dump, content_type="application/json; charset=utf-8"), result_status
                 elif request.args.get("id"):
                     param_id = request.args.get("id")
                     if request.method == 'GET':
-                        return AccountControlObj.control_get(param_id)
+                        result_json = AccountControlObj.control_get(param_id)
                     elif request.method == 'PUT':
                         result_json = AccountControlObj.control_update(request, param_id)
-                        result_status = result_json[1]
-                        result_json = result_json[0]
-                        return_dump = json.dumps(result_json, ensure_ascii=False)
-                        return Response(return_dump, content_type="application/json; charset=utf-8"), result_status
+
+                # Trata o retorno dos métodos POST, PUT, GET
+                result_status = result_json[1]
+                result_json = result_json[0]
+                return_dump = json.dumps(result_json, ensure_ascii=False)
+                return Response(return_dump, content_type="application/json; charset=utf-8"), result_status
             else:
                 # Tem o header de autorização, mas não está com a chave correta.
                 result_json = {"erro": " Não autorizado", "descrição": "Chave de autenticação inválida"}

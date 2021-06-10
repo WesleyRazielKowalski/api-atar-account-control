@@ -44,10 +44,14 @@ class AccountControlObj():
             if not id:
                 raise str(messagesDefault.parameter_message_empty())
 
-            list_datastore = AccountDatastore.get_register(id)
-            register = AccountObject()
-            register.entry_data_with_datastore(list_datastore[0])
-            return register.get_json()
+            validate = AccountControlObj.validate_control_get(id)
+            if validate[0] == True:
+                list_datastore = AccountDatastore.get_register(id)
+                register = AccountObject()
+                register.entry_data_with_datastore(list_datastore[0])
+                return {"data": register.get_json()}, 200
+            else:
+                return {"erro": str(validate[0])}, validate[1]
 
         except Exception as e:
             return e
@@ -66,10 +70,10 @@ class AccountControlObj():
             if not AccountValidator.validate_email(account_obj.email):
                 return ("E-mail inválido"), 406
 
-            if AccountValidator.validate_exists_registered_email(account_obj.id, account_obj.email):
+            if AccountValidator.validate_exists_registered_email(account_obj.id, account_obj.email, False):
                 return ("E-mail já cadastrado"), 409
 
-            if AccountValidator.validate_exists_registered_document(account_obj.id, account_obj.document):
+            if AccountValidator.validate_exists_registered_document(account_obj.id, account_obj.document, False):
                 return ("Documento já cadastrado"), 400
 
             return True, 200
@@ -98,6 +102,18 @@ class AccountControlObj():
 
             if AccountValidator.validate_exists_registered_document(account_obj.id, account_obj.document):
                 return ("Documento já cadastrado"), 400
+
+            return True, 200
+        except Exception as e:
+            return e
+
+    def validate_control_get(id):
+        try:
+            if not id:
+                raise str(messagesDefault.parameter_message_empty())
+
+            if not AccountValidator.validate_exists_registered_id(id):
+                return ("Id não cadastrado"), 400
 
             return True, 200
         except Exception as e:

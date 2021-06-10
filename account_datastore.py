@@ -14,7 +14,7 @@ class AccountDatastore():
                 my_id = key.id
 
                 entity = datastore.Entity(key=key)
-                entity.update(account_obj.get_json_without_id())
+                entity.update(account_obj.get_datastore())
                 client.put(entity)
 
                 return my_id
@@ -27,7 +27,7 @@ class AccountDatastore():
         try:
             complete_key = client.key("users", int(account_obj.id))
             entity = datastore.Entity(key=complete_key)
-            entity.update(account_obj.get_json())
+            entity.update(account_obj.get_datastore())
             client.put(entity)
             return entity
         except Exception as e:

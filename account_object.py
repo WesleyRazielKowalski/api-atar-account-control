@@ -14,19 +14,19 @@ class AccountObject():
         if request_data_internal:
             self.id = 0 if id == 0 else id
             self.birth_date = str(AccountValidator().clean_characters_birthdate(request_data_internal.json["birthDate"]))
-            self.document = str(AccountValidator().formating_document(request_data_internal.json["document"]))
+            self.document = str(AccountValidator().clean_characters_document(request_data_internal.json["document"]))
             self.email = str(request_data_internal.json["email"])
             self.full_name = str(request_data_internal.json["fullName"])
-            self.phone = str(AccountValidator().formating_phone(request_data_internal.json["phone"]))
+            self.phone = str(AccountValidator().clean_characters_phone(request_data_internal.json["phone"]))
 
     def convert_request_into_account_object(self, request_data_internal, id = 0):
         if request_data_internal:
             self.id = 0 if id == 0 else id
             self.birth_date = str(AccountValidator().clean_characters_birthdate(request_data_internal.json["birthDate"]))
-            self.document = str(AccountValidator().formating_document(request_data_internal.json["document"]))
+            self.document = str(AccountValidator().clean_characters_document(request_data_internal.json["document"]))
             self.email = str(request_data_internal.json["email"])
             self.full_name = str(request_data_internal.json["fullName"])
-            self.phone = str(AccountValidator().formating_phone(request_data_internal.json["phone"]))
+            self.phone = str(AccountValidator().clean_characters_phone(request_data_internal.json["phone"]))
 
     def entry_data_with_datastore(self, data_datastore):
         self.id = data_datastore.id
@@ -46,6 +46,7 @@ class AccountObject():
             'phone': str(AccountValidator().formating_phone(self.phone)),
         }
         return data
+
     def get_json_without_id(self):
         data = {
             'birthDate': str(AccountValidator().formating_birthdate(self.birth_date)),
@@ -53,5 +54,15 @@ class AccountObject():
             'email': str(self.email),
             'fullName': str(self.full_name),
             'phone': str(AccountValidator().formating_phone(self.phone)),
+        }
+        return data
+
+    def get_datastore(self):
+        data = {
+            'birthDate': str(self.birth_date),
+            'document': str(self.document),
+            'email': str(self.email),
+            'fullName': str(self.full_name),
+            'phone': str(self.phone),
         }
         return data

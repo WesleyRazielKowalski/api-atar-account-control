@@ -59,7 +59,7 @@ class AccountValidator():
         except Exception as e:
             print(str(e))
 
-    def validate_exists_registered_email(id_account_currency, email):
+    def validate_exists_registered_email(id_account_currency, email, is_put = True):
         try:
             if not email:
                 raise str(messagesDefault.parameter_message_empty())
@@ -67,14 +67,18 @@ class AccountValidator():
             result = False
             register = AccountDatastore.email_registered(email)
             if register[0]:
-                if int(register[1][0]["id"]) != int(id_account_currency):
+                if not is_put:
                     result = True
+                else:
+                    if int(register[1][0].id) != int(id_account_currency) and is_put:
+                        result = True
+
 
             return result
         except Exception as e:
             print(str(e))
 
-    def validate_exists_registered_document(id_account_currency, document):
+    def validate_exists_registered_document(id_account_currency, document, is_put = True):
         try:
             if not document:
                 raise str(messagesDefault.parameter_message_empty())
@@ -82,8 +86,11 @@ class AccountValidator():
             result = False
             register = AccountDatastore.document_registered(document)
             if register[0]:
-                if int(register[1][0]["id"]) != int(id_account_currency):
+                if not is_put:
                     result = True
+                else:
+                    if int(register[1][0].id) != int(id_account_currency) and is_put:
+                        result = True
 
             return result
         except Exception as e:
@@ -98,7 +105,7 @@ class AccountValidator():
             register = AccountDatastore.get_register(id)
             if register:
                 if register[0]:
-                    if int(register[0]["id"]) == int(id):
+                    if int(register[0].id) == int(id):
                         result = True
 
             return result
