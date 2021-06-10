@@ -3,7 +3,7 @@ import os
 
 class AccountDatastore():
     def set_keystore():
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/wesley/workspace/Me/POC/atar/key_datastore.json"
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.dirname(os.path.realpath(__file__))+"/key_datastore.json"
 
     def insert_register(account_obj):
         AccountDatastore.set_keystore()
