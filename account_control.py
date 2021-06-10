@@ -113,7 +113,7 @@ class AccountControlObj():
                 raise str(messagesDefault.parameter_message_empty())
 
             if not AccountValidator.validate_exists_registered_id(id):
-                return ("Id não cadastrado"), 400
+                return ("Id não cadastrado"), 404
 
             return True, 200
         except Exception as e:
