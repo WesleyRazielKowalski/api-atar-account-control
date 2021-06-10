@@ -1,0 +1,117 @@
+openapi: 3.0.1
+info:
+  title: API Atar
+  version: v1
+servers:
+- url: https://meuprojeto.appspot.com/
+paths:
+  /account:
+    post:
+      summary: Abre uma conta ATAR e retorna o objeto com o ID gerado
+      security:
+        - basicAuth: []
+      requestBody:
+        description: Dados do usuario a ser cadastrado
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        200:
+          description: Usuario cadastrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Dados invalidos
+        406:
+          description: E-mail invalido
+        409:
+          description: E-mail ja cadastrado
+  /account/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: Id do usuário retornado ao abrir conta
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Retorna os dados do titular da conta
+      security:
+        - basicAuth: []
+      responses:
+        200:
+          description: Usuario cadastrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Não autorizado
+        404:
+          description: Não encontrado
+    put:
+      summary: Atualiza os dados do titular da conta
+      security:
+        - basicAuth: []
+      requestBody:
+        description: Dados do usuario para atualizar
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        204:
+          description: Usuario atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Dados invalidos
+        401:
+          description: Não autorizado
+        406:
+          description: E-mail invalido
+        409:
+          description: E-mail ja cadastrado
+components:
+  securitySchemes:
+      basicAuth:
+        type: http
+        scheme: basic
+        description: "HTTPS Basic Authentication. <br><br>
+                      Identificador e senha codificados em base64.
+                      <br> Ex: Basic MTIzNDU2Nzg5MTE6MTIzNDU2"
+  schemas:
+    User:
+      type: object
+      required:
+      - fullName
+      - email
+      - phone
+      - birthDate
+      - document
+      properties:
+        id:
+          type: string
+          description: Id do usuário
+        fullName:
+          type: string
+          description: Nome completo do usuario
+        email:
+          type: string
+          description: Nome completo do usuario
+        phone:
+          type: string
+          description: Telefone do usuario (DDI + DDD + NUMERO)
+        birthDate:
+          type: string
+          description: Timestamp da data de nascimento do usuario
+        document:
+          type: string
+          description: Numero do documento do usuario
