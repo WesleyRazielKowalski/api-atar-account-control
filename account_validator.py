@@ -65,7 +65,7 @@ class AccountValidator():
                 raise str(messagesDefault.parameter_message_empty())
 
             result = False
-            register = AccountDatastore().email_registered(email)
+            register = AccountDatastore.email_registered(email)
             if register[0]:
                 if int(register[1][0]["id"]) != int(id_account_currency):
                     result = True
@@ -80,10 +80,26 @@ class AccountValidator():
                 raise str(messagesDefault.parameter_message_empty())
 
             result = False
-            register = AccountDatastore().document_registered(document)
+            register = AccountDatastore.document_registered(document)
             if register[0]:
                 if int(register[1][0]["id"]) != int(id_account_currency):
                     result = True
+
+            return result
+        except Exception as e:
+            print(str(e))
+
+    def validate_exists_registered_id(id):
+        try:
+            if not id:
+                raise str(messagesDefault.parameter_message_empty())
+
+            result = False
+            register = AccountDatastore.get_register(id)
+            if register:
+                if register[0]:
+                    if int(register[0]["id"]) == int(id):
+                        result = True
 
             return result
         except Exception as e:

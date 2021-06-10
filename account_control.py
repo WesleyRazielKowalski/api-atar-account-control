@@ -16,8 +16,11 @@ class AccountControlObj():
                 raise str(messagesDefault.parameter_message_empty())
 
             account_obj = AccountObject(request_data)
-            if AccountControlObj.validate_control_insert(account_obj):
-                return AccountDatastore.insert_register(account_obj)
+            validate = AccountControlObj.validate_control_insert(account_obj)
+            if validate[0] == True:
+                return {"id" : AccountDatastore.insert_register(account_obj)}, 200
+            else:
+                return {"erro": str(validate[0])}, validate[1]
         except Exception as e:
             return e
 
@@ -50,15 +53,6 @@ class AccountControlObj():
             return e
 
     def validate_control_insert(account_obj):
-        return True
-        try:
-            if not account_obj:
-                raise str(messagesDefault.parameter_message_empty())
-
-        except Exception as e:
-            return e
-
-    def validate_control_update(account_obj):
         try:
             if not account_obj:
                 raise str(messagesDefault.parameter_message_empty())
@@ -76,7 +70,34 @@ class AccountControlObj():
                 return ("E-mail já cadastrado"), 409
 
             if AccountValidator.validate_exists_registered_document(account_obj.id, account_obj.document):
+                return ("Documento já cadastrado"), 400
+
+            return True, 200
+        except Exception as e:
+            return e
+
+    def validate_control_update(account_obj):
+        try:
+            if not account_obj:
+                raise str(messagesDefault.parameter_message_empty())
+
+            if not AccountValidator.validate_exists_registered_id(account_obj.id):
+                return ("Id não cadastrado"), 400
+
+            if not AccountValidator.validate_birthdate_older_eighteen(account_obj.birth_date):
+                return ("Data de nascimento menor que 18 anos"), 400
+
+            if not AccountValidator.validate_document(account_obj.document):
                 return ("Documento inválido"), 400
+
+            if not AccountValidator.validate_email(account_obj.email):
+                return ("E-mail inválido"), 406
+
+            if AccountValidator.validate_exists_registered_email(account_obj.id, account_obj.email):
+                return ("E-mail já cadastrado"), 409
+
+            if AccountValidator.validate_exists_registered_document(account_obj.id, account_obj.document):
+                return ("Documento já cadastrado"), 400
 
             return True, 200
         except Exception as e:

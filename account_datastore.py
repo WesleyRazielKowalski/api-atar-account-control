@@ -43,9 +43,9 @@ class AccountDatastore():
             return_list = list(query.fetch())
             return return_list
         except Exception as e:
-            return ("Erro ao alterar registro no datastore!")
+            return ("Erro ao buscar registro no datastore!")
 
-    def email_registered(self, email):
+    def email_registered(email):
         AccountDatastore.set_keystore()
         client = datastore.Client()
         try:
@@ -59,7 +59,7 @@ class AccountDatastore():
         except Exception as e:
             return ("Erro ao validar email cadastrado no datastore!")
 
-    def document_registered(self, document):
+    def document_registered(document):
         AccountDatastore.set_keystore()
         client = datastore.Client()
         try:

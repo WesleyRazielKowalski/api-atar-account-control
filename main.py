@@ -26,11 +26,13 @@ def control_account():
         if request.headers['Authorization']:
             if Authentication.check_can_access(request.headers['Authorization']):
                 if request.method == 'POST':
-                    return_id = str(AccountControlObj.control_insert(request))
+                    return_id = AccountControlObj.control_insert(request)
                     if return_id:
-                        result_json = {"id": str(return_id)}
+                        result_json = return_id
+                        result_status = result_json[1]
+                        result_json = result_json[0]
                         return_dump = json.dumps(result_json, ensure_ascii=False)
-                        return Response(return_dump, content_type="application/json; charset=utf-8")
+                        return Response(return_dump, content_type="application/json; charset=utf-8"), result_status
                 elif request.args.get("id"):
                     param_id = request.args.get("id")
                     if request.method == 'GET':
